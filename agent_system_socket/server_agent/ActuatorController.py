@@ -17,7 +17,7 @@ class ActuatorController(threading.Thread):
             print(frontstr, "set HOST:"+self.HOST)
         else:
             self.HOST = server_host
-            print(self.HOST)
+            print(frontstr, "set HOST:"+self.HOST)
         self.PORT = actuator_manager_port 
 
     def run(self):

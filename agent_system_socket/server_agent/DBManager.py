@@ -20,7 +20,7 @@ class DBManager:
     def DB_Con(self):
         self.conn = pymysql.connect(host=self.DB_host, port=self.DB_port, user=self.DB_user, password=self.DB_password,db=self.DBN_dr, charset=self.charset) # DB연결 나중에 예외처리 해줄것
         self.curs = self.conn.cursor()
-        # print(frontstr, "DB connected.....")
+        print(frontstr, "DB connected.....")
 
     # add single quotation mark at the string
     def addsq(self,s): 
@@ -46,10 +46,10 @@ class DBManager:
 
     # get sensor list and actuator list from specific metadata table
     def get_sensor_actuator_list(self, item_id):
-        sql = "SELECT metadata_value FROM " + self.DBN_dr + '.' + self.tbl_specific + \
-                            " WHERE item_id = " + self.addsq(item_id) + " AND (metadata_key like " + self.addsq('sensor-%') + \
-                            " OR metadata_key like " + self.addsq('actuator-%') +");"
-        # print(frontstr, sql)
+        sql = "SELECT md_value FROM " + self.DBN_dr + '.' + self.tbl_specific + \
+                            " WHERE item_id = " + self.addsq(item_id) + " AND (md_key=" + self.addsq('sensor') + \
+                            " OR md_key=" + self.addsq('actuator') +");"
+        print(frontstr, sql)
         num=self.curs.execute(sql) 
         DB_column=self.curs.fetchall()
         return DB_column
@@ -81,7 +81,7 @@ class DBManager:
     # get a list of acutators which have an actuating event.
     def get_distinct_actlist(self, table_name):
         sql = "SELECT DISTINCT actuator FROM " + self.DBN_dm + "." + table_name + "_act;"
-        # print(frontstr, sql)
+        print(frontstr, sql)
         self.curs.execute(sql)
         act = self.curs.fetchall()
         newlist = [data[0] for data in act]
@@ -91,7 +91,7 @@ class DBManager:
     def get_keyValue_act(self, actuator, table_name):
         sql = "SELECT actuator, status FROM " + self.DBN_dm + "." + table_name + "_act WHERE actuator='" + actuator + \
                                 "' order by timestamp desc limit 1;"
-        # print(frontstr, sql)
+        print(frontstr, sql)
         self.curs.execute(sql)
         rs = self.curs.fetchone()
         return rs
@@ -99,7 +99,7 @@ class DBManager:
     # delete actuator event after sending actuating message to device
     def delete_actuator_data(self, actuator, table_name):
         sql = "DELETE FROM " + self.DBN_dm + "." + table_name + "_act WHERE actuator='" + actuator + "';"
-        # print(frontstr, sql)
+        print(frontstr, sql)
         self.curs.execute(sql)
         self.conn.commit()
 
@@ -123,6 +123,6 @@ class DBManager:
             else:
                 sql = sql + "'" + value + "',"
         sql = sql + ');'
-        # print(frontstr, sql)
+        print(frontstr, sql)
         self.curs.execute(sql)
         self.conn.commit()
